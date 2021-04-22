@@ -15,82 +15,82 @@ void print128_num(__m128i var)
 
 
 long long int sum_filter(unsigned int vals[NUM_ELEMENTS]) {
-	clock_t start = clock();
+    clock_t start = clock();
 
         printf("starting sum");
         long long int sum = 0;
-	for(unsigned int w = 0; w < NUM_ITERS; w++) {
-		for(unsigned int i = 0; i < NUM_ELEMENTS; i++) {
-			if(vals[i] >= 128) {
-				sum += vals[i];
-			}
-		}
+    for(unsigned int w = 0; w < NUM_ITERS; w++) {
+        for(unsigned int i = 0; i < NUM_ELEMENTS; i++) {
+            if(vals[i] >= 128) {
+                sum += vals[i];
+            }
         }
-	clock_t end = clock();
-	printf("Time taken: %Lf s\n", ((long double)(end - start) / CLOCKS_PER_SEC) / NUM_ITERS);
-	return sum;
+        }
+    clock_t end = clock();
+    printf("Time taken: %Lf s\n", ((long double)(end - start) / CLOCKS_PER_SEC) / NUM_ITERS);
+    return sum;
 }
 
 long long int sum_mod(unsigned int vals[NUM_ELEMENTS]) {
-	clock_t start = clock();
+    clock_t start = clock();
 
         printf("starting sum");
         long long int sum = 0;
-	for(unsigned int w = 0; w < NUM_ITERS; w++) {
-		for(unsigned int i = 0; i < NUM_ELEMENTS; i++) {
+    for(unsigned int w = 0; w < NUM_ITERS; w++) {
+        for(unsigned int i = 0; i < NUM_ELEMENTS; i++) {
                     if(vals[i] % 2 == 1)
                         sum += vals[i];
-		}
         }
-	clock_t end = clock();
-	printf("Time taken: %Lf s\n", ((long double)(end - start) / CLOCKS_PER_SEC) / NUM_ITERS);
-	return sum;
+        }
+    clock_t end = clock();
+    printf("Time taken: %Lf s\n", ((long double)(end - start) / CLOCKS_PER_SEC) / NUM_ITERS);
+    return sum;
 }
 
 long long int sum(unsigned int vals[NUM_ELEMENTS]) {
-	clock_t start = clock();
+    clock_t start = clock();
 
         printf("starting sum");
         long long int sum = 0;
-	for(unsigned int w = 0; w < NUM_ITERS; w++) {
-		for(unsigned int i = 0; i < NUM_ELEMENTS; i++) {
+    for(unsigned int w = 0; w < NUM_ITERS; w++) {
+        for(unsigned int i = 0; i < NUM_ELEMENTS; i++) {
                         sum += vals[i];
-		}
         }
-	clock_t end = clock();
-	printf("Time taken: %Lf s\n", ((long double)(end - start) / CLOCKS_PER_SEC) / NUM_ITERS);
-	return sum;
+        }
+    clock_t end = clock();
+    printf("Time taken: %Lf s\n", ((long double)(end - start) / CLOCKS_PER_SEC) / NUM_ITERS);
+    return sum;
 }
 
 
 long long int sum_unrolled(unsigned int vals[NUM_ELEMENTS]) {
-	clock_t start = clock();
-	long long int sum = 0;
+    clock_t start = clock();
+    long long int sum = 0;
 
-	for(unsigned int w = 0; w < NUM_ITERS; w++) {
-		for(unsigned int i = 0; i < NUM_ELEMENTS / 4 * 4; i += 4) {
-			if(vals[i] >= 128) sum += vals[i];
-			if(vals[i + 1] >= 128) sum += vals[i + 1];
-			if(vals[i + 2] >= 128) sum += vals[i + 2];
-			if(vals[i + 3] >= 128) sum += vals[i + 3];
-		}
-                // tailcase
-		for(unsigned int i = NUM_ELEMENTS / 4 * 4; i < NUM_ELEMENTS; i++) {
-			if (vals[i] >= 128) {
-				sum += vals[i];
-			}
-		}
+    for(unsigned int w = 0; w < NUM_ITERS; w++) {
+        for(unsigned int i = 0; i < NUM_ELEMENTS / 4 * 4; i += 4) {
+            if(vals[i] >= 128) sum += vals[i];
+            if(vals[i + 1] >= 128) sum += vals[i + 1];
+            if(vals[i + 2] >= 128) sum += vals[i + 2];
+            if(vals[i + 3] >= 128) sum += vals[i + 3];
         }
-	clock_t end = clock();
-	printf("Time taken: %Lf s\n", (long double)(end - start) / CLOCKS_PER_SEC / NUM_ITERS);
-	return sum;
+                // tailcase
+        for(unsigned int i = NUM_ELEMENTS / 4 * 4; i < NUM_ELEMENTS; i++) {
+            if (vals[i] >= 128) {
+                sum += vals[i];
+            }
+        }
+        }
+    clock_t end = clock();
+    printf("Time taken: %Lf s\n", (long double)(end - start) / CLOCKS_PER_SEC / NUM_ITERS);
+    return sum;
 }
 
 long long int sum_simd_mod(unsigned int vals[NUM_ELEMENTS]) {
-	clock_t start = clock();
+    clock_t start = clock();
         long long int final_result = 0;
-	__m128i zero_vec = _mm_setzero_si128();//zero vector
-	for(unsigned int w = 0; w < NUM_ITERS; w++) {
+    __m128i zero_vec = _mm_setzero_si128();//zero vector
+    for(unsigned int w = 0; w < NUM_ITERS; w++) {
                 int res[4];
                 res[0] = 0;
                 res[1] = 0;
@@ -131,18 +131,18 @@ long long int sum_simd_mod(unsigned int vals[NUM_ELEMENTS]) {
                 }
 
         }
-	clock_t end = clock();
-	printf("Time taken: %Lf s\n", (((long double)(end - start) / CLOCKS_PER_SEC) / NUM_ITERS));
-	return final_result;
+    clock_t end = clock();
+    printf("Time taken: %Lf s\n", (((long double)(end - start) / CLOCKS_PER_SEC) / NUM_ITERS));
+    return final_result;
 }
 
 
 
 long long int sum_simd_filter(unsigned int vals[NUM_ELEMENTS]) {
-	clock_t start = clock();
-	__m128i _100 = _mm_set1_epi32(100);//120 vector
+    clock_t start = clock();
+    __m128i _100 = _mm_set1_epi32(100);//120 vector
         long long int result = 0;
-	for(unsigned int w = 0; w < NUM_ITERS; w++) {
+    for(unsigned int w = 0; w < NUM_ITERS; w++) {
                 int valid[4];
                 valid[0] = 0;
                 valid[1] = 0;
@@ -180,15 +180,15 @@ long long int sum_simd_filter(unsigned int vals[NUM_ELEMENTS]) {
                     }
                 }
         }
-	clock_t end = clock();
-	printf("Time taken: %Lf s\n", (((long double)(end - start) / CLOCKS_PER_SEC) / NUM_ITERS));
-	return result;
+    clock_t end = clock();
+    printf("Time taken: %Lf s\n", (((long double)(end - start) / CLOCKS_PER_SEC) / NUM_ITERS));
+    return result;
 }
 
 long long int sum_simd(unsigned int vals[NUM_ELEMENTS]) {
-	clock_t start = clock();
+    clock_t start = clock();
         long long int result = 0;
-	for(unsigned int w = 0; w < NUM_ITERS; w++) {
+    for(unsigned int w = 0; w < NUM_ITERS; w++) {
                 int res[4];
                 res[0] = 0;
                 res[1] = 0;
@@ -218,7 +218,7 @@ long long int sum_simd(unsigned int vals[NUM_ELEMENTS]) {
                         result += vals[i];
                 }
         }
-	clock_t end = clock();
-	printf("Time taken: %Lf s\n", (((long double)(end - start) / CLOCKS_PER_SEC) / NUM_ITERS));
-	return result;
+    clock_t end = clock();
+    printf("Time taken: %Lf s\n", (((long double)(end - start) / CLOCKS_PER_SEC) / NUM_ITERS));
+    return result;
 }

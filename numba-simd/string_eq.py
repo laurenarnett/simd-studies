@@ -4,9 +4,16 @@ import timeit
 import random
 import string
 
-NUM_ITERS = 100
 STRING_LENGTH = 100000
+NUM_ITERS = 100
 
+SHOW_INSTR = False
+
+# ********************************************************************
+#
+# Testing utilities
+#
+# ********************************************************************
 def run_test(fn, arg1, arg2, label, show_instr=False):
     if 'simd' in fn.__name__:
         print("JIT Compiling {}".format(label))
@@ -32,6 +39,7 @@ def find_instr(func, keyword, sig=0, limit=5):
                 break
     if count == 0:
         print('No %s instructions found' % keyword)
+# ********************************************************************
 
 
 s1 = ''.join(random.choice(string.ascii_letters) for i in range(STRING_LENGTH))
@@ -54,23 +62,12 @@ nputf32_2 = np.frombuffer(utf32_2, dtype='S1')
 
 
 '''
-to upper test
-'''
-def to_upper_str(s, s2):
-    return [x.upper() for x in s]
-# run_test('to_upper_str', 's1', 's2', "to upper str")
-
-def to_upper_np(npchar_1, s2):
-    return np.char.upper(npchar_1)
-
-# run_test('to_upper_np', 'npchar_1', 's2', "to upper np char array")
-
-'''
 plain old str
 '''
 def plain_str_eq(s1, s2):
     return [-1 if s1[i] != s2[i] else 0 for i in range(len(s1))]
-# run_test('plain_str_eq', 's1', 's2', "PLAIN STR")
+
+run_test(plain_str_eq, 's1', 's2', "string eq using a for loop")
 
 '''
 np char array
@@ -78,7 +75,7 @@ np char array
 def np_char_eq(s1, s2):
     return np.char.equal(s1, s2)
 
-# run_test('np_char_eq', 'npchar_1', 'npchar_2', "NUMPY CHAR ARRAY WITH NP EQUALS")
+run_test(np_char_eq, 'npchar_1', 'npchar_2', "np char array with np.char.equal()")
 
 '''
 equivalence of chars
@@ -93,12 +90,12 @@ def str_eq(s1, s2):
             res[i] = -1
     return res
 
-# run_test('str_eq', 's1', 's2', "STR")
-# run_test('str_eq', 'ascii1', 'ascii2', "STR")
-# run_test('str_eq', 'npascii1', 'npascii2', "NUMPY BYTES")
-# run_test('str_eq', 'utf32_1', 'utf32_2', "UTF 32")
-# run_test('str_eq', 'nputf32_1', 'nputf32_2', "NUMPY UTF 32")
-# run_test('str_eq', 'npchar_1', 'npchar_2', "NUMPY CHAR ARRAY")
+run_test(str_eq, 's1', 's2', "string eq for unicode")
+run_test(str_eq, 'ascii1', 'ascii2', "string eq for ascii")
+run_test(str_eq, 'npascii1', 'npascii2', "string eq for np from ascii")
+run_test(str_eq, 'utf32_1', 'utf32_2', "string eq for utf32")
+run_test(str_eq, 'nputf32_1', 'nputf32_2', "string eq for np from utf32")
+run_test(str_eq, 'npchar_1', 'npchar_2', "string eq for np char array")
 
 
 '''
@@ -115,79 +112,10 @@ def str_eq_simd(s1, s2):
             res[i] = -1
     return res
 
-run_test(str_eq_simd, 's1', 's2', "SIMD STR", True)
-
-#print(str_eq_simd.)
-
-# run_test('str_eq_simd', 'ascii1', 'ascii2', "SIMD ASCII")
-# run_test('str_eq_simd', 'npascii1', 'npascii2', "SIMD NUMPY BYTES")
-# run_test('str_eq_simd', 'utf32_1', 'utf32_2', "SIMD UTF 32")
-# run_test('str_eq_simd', 'nputf32_1', 'nputf32_2', "SIMD NUMPY UTF 32")
-#
-#
-#run_test('str_eq_simd', 'npchar_1', 'npchar_2', "SIMD NUMPY CHAR ARRAY")
-
-
-# '''
-# Equivalence of chars 
-# vanilla python 
-# for loop
-# np.char.array
-# '''
-# def arr_eq(l1, l2):
-#     res = np.zeros(len(l1))
-#     for i in range(l1.shape[0]):
-#         if l1[i] != l2[i]:
-#             res[i] = -1
-#     return res
-
-
-# '''
-# Equivalence of chars
-# SIMD
-# for loop
-# np.char.array / 
-# '''
-# @jit(nopython=True)
-# def arr_eq_simd(l1, l2):
-#     res = np.zeros(l1.shape[0])
-#     for i in range(l1.shape[0]):
-#         if l1[i] != l2[i]:
-#             res[i] = -1
-#     return res
-
-
-
-'''
-equivalence of chars
-np.equal
-np.char.array
-error: 
-'''
-# def arr_eq_np(l1, l2):
-#     return np.equal(l1, l2)
-
-# print("arr eq np")
-# t2 = timeit.timeit('arr_eq_np(l1,l2)',"from __main__ import arr_eq_np, l1, l2")
-# print("arr eq np {}".format(t2))
-
-
-'''
-equivalence of chars
-SIMD
-np.equal
-np.char.array
-error: 
-'''
-# @jit(nopython=True)
-# def arr_eq_np_simd(l1, l2):
-#     return np.equal(l1, l2)
-
-# print("arr eq simd np")
-# t2 = timeit.timeit('arr_eq_np_simd(l1,l2)',"from __main__ import arr_eq_np_simd, l1, l2",number=10)
-# print("arr eq simd np {}".format(t2))
-
-
-# print("arr eq simd np")
-# find_instr(arr_eq_simd_np, keyword='ymm', sig=0)
-# find_instr(arr_eq_simd_np, keyword='xmm', sig=0)
+run_test(str_eq_simd, 's1', 's2', "simd string eq for unicode", show_instr=SHOW_INSTR)
+run_test(str_eq_simd, 'ascii1', 'ascii2', "simd string eq for ascii", show_instr=SHOW_INSTR)
+run_test(str_eq_simd, 'npascii1', 'npascii2', "simd string eq for np from ascii", show_instr=SHOW_INSTR)
+run_test(str_eq_simd, 'utf32_1', 'utf32_2', "simd string eq for utf32", show_instr=SHOW_INSTR)
+run_test(str_eq_simd, 'nputf32_1', 'nputf32_2', "simd string eq for np from utf32", show_instr=SHOW_INSTR)
+# run_test(str_eq_simd, 'npchar_1', 'npchar_2', "simd string eq for np char array", show_instr=SHOW_INSTR)
+# ^ compilation hangs indefinitely

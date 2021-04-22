@@ -6,7 +6,7 @@
 #include "mod.h"
 
 int main(int argc, char* argv[]) {
-    printf("Generate a randomized array.\n");
+    printf("Generating a randomized array.\n");
     unsigned int vals[NUM_ELEMENTS];
     long long int reference;
     long long int simd;

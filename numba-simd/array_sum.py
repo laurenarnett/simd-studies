@@ -2,14 +2,11 @@ import numpy as np
 from numba import jit
 import timeit
 
-NUM_ITERS = 1000
-
-
-# ******************************************************************************
+# ********************************************************************
 #
 # Testing utilities
 #
-# ******************************************************************************
+# ********************************************************************
 def run_test(fn, arg1, label, show_instr=False):
     if 'simd' in fn.__name__:
         print("JIT Compiling {}".format(label))
@@ -35,8 +32,9 @@ def find_instr(func, keyword, sig=0, limit=5):
                 break
     if count == 0:
         print('No %s instructions found' % keyword)
+# ********************************************************************
 
-# ******************************************************************************
+NUM_ITERS = 1000
 
 vals = np.random.randint(0, 500, ((1 << 16) + 10), dtype=np.uint32)
 

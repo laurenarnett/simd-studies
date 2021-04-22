@@ -49,6 +49,12 @@ int main(int argc, char* argv[]) {
     printf("Starting randomized sum with mod 2 filter.\n");
     printf("Sum: %lld\n", reference = sum_mod(vals));
 
+    printf("Starting randomized unrolled sum with mod 2 filter.\n");
+    printf("Sum: %lld\n", unrolled = sum_mod_unrolled(vals));
+    if (unrolled != reference) {
+        printf("OH NO! unrolled sum %lld doesn't match reference sum %lld!\n", unrolled, reference);
+    }
+
     printf("Starting randomized SIMD sum with mod 2 filter.\n");
     printf("Sum: %lld\n", simd = sum_simd_mod(vals));
     if (simd != reference) {

@@ -19,6 +19,27 @@ long long int sum_mod(unsigned int vals[NUM_ELEMENTS]) {
     return sum;
 }
 
+long long int sum_mod_unrolled(unsigned int vals[NUM_ELEMENTS]) {
+    clock_t start = clock();
+    long long int sum = 0;
+    for(unsigned int w = 0; w < NUM_ITERS; w++) {
+        for(unsigned int i = 0; i < NUM_ELEMENTS / 4 * 4; i += 4) {
+            if(vals[i] % 2) sum += vals[i];
+            if(vals[i + 1] % 2) sum += vals[i + 1];
+            if(vals[i + 2] % 2) sum += vals[i + 2];
+            if(vals[i + 3] % 2) sum += vals[i + 3];
+        }
+        // tailcase
+        for(unsigned int i = NUM_ELEMENTS / 4 * 4; i < NUM_ELEMENTS; i++) {
+            if (vals[i] % 2)
+                sum += vals[i];
+        }
+    }
+    clock_t end = clock();
+    printf("Time taken: %Lf s\n", (long double)(end - start) / CLOCKS_PER_SEC / NUM_ITERS);
+    return sum;
+}
+
 long long int sum_simd_mod(unsigned int vals[NUM_ELEMENTS]) {
     clock_t start = clock();
     long long int final_result = 0;

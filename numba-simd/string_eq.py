@@ -7,7 +7,7 @@ import string
 STRING_LENGTH = 100000
 NUM_ITERS = 100
 
-SHOW_INSTR = False
+SHOW_INSTR = True
 
 # ********************************************************************
 #
@@ -22,7 +22,7 @@ def run_test(fn, arg1, arg2, label, show_instr=False):
 
     print("Running %s" % label)
     t = timeit.timeit('{}({},{})'.format(fn.__name__, arg1, arg2),"from __main__ import {}, {}, {}".format(fn.__name__, arg1, arg2) ,number=NUM_ITERS)
-    print("Time per iteration: {} s".format(t / NUM_ITERS))
+    print("Time per iteration: {:.4e} s".format(t / NUM_ITERS))
     if 'simd' in fn.__name__ and show_instr == True:
         print("{} instructions".format(label))
         find_instr(fn, keyword='xmm', sig=0)

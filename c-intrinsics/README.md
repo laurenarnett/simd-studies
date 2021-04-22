@@ -57,3 +57,7 @@ This test sums all elements in an array where `element >= 100`.
 ### Array Sum with mod 2 Filter
  - `mod.c`
 This test sums all elements in an array where `element % 2 == 1`.
+
+
+### Acknowledgments
+Skeleton code for this study was based off of Berkeley's Spring 2020 [Comp Arch](https://cs61c.org/sp20/labs/lab12/).

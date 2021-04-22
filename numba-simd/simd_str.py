@@ -4,22 +4,23 @@ import timeit
 import random
 import string
 
-def run_test(fn, arg1, arg2, label):
-    print("***********************************")
-    if 'simd' in fn:
-        print("{} precompile".format(label))
-        t = timeit.timeit('{}({},{})'.format(fn, arg1, arg2),"from __main__ import {}, {}, {}".format(fn, arg1, arg2) ,number=NUM_ITERS)
-        print("{} {}".format(label, (t / NUM_ITERS)))
+NUM_ITERS = 100
+STRING_LENGTH = 100000
 
-    print(label)
-    t = timeit.timeit('{}({},{})'.format(fn, arg1, arg2),"from __main__ import {}, {}, {}".format(fn, arg1, arg2) ,number=NUM_ITERS)
-    print("{} {}".format(label, (t / NUM_ITERS)))
-    if 'simd' in fn:
-        fn_def = globals()[fn]
+def run_test(fn, arg1, arg2, label, show_instr=False):
+    if 'simd' in fn.__name__:
+        print("JIT Compiling {}".format(label))
+        # must run at least one time to JIT compile the function
+        t = timeit.timeit('{}({},{})'.format(fn.__name__, arg1, arg2),"from __main__ import {}, {}, {}".format(fn.__name__, arg1, arg2) ,number=1)
+
+    print("Running %s" % label)
+    t = timeit.timeit('{}({},{})'.format(fn.__name__, arg1, arg2),"from __main__ import {}, {}, {}".format(fn.__name__, arg1, arg2) ,number=NUM_ITERS)
+    print("Time per iteration: {} s".format(t / NUM_ITERS))
+    if 'simd' in fn.__name__ and show_instr == True:
         print("{} instructions".format(label))
-        find_instr(fn_def, keyword='xmm', sig=0)
-        find_instr(fn_def, keyword='ymm', sig=0)
-    print("***********************************")
+        find_instr(fn, keyword='xmm', sig=0)
+        find_instr(fn, keyword='ymm', sig=0)
+    print("")
     
 def find_instr(func, keyword, sig=0, limit=5):
     count = 0
@@ -30,11 +31,9 @@ def find_instr(func, keyword, sig=0, limit=5):
             if count >= limit:
                 break
     if count == 0:
-        print('No instructions found')
+        print('No %s instructions found' % keyword)
 
 
-STRING_LENGTH = 100000
-NUM_ITERS = 100
 s1 = ''.join(random.choice(string.ascii_letters) for i in range(STRING_LENGTH))
 s2 = ''.join(random.choice(string.ascii_letters) for i in range(STRING_LENGTH))
 
@@ -59,27 +58,27 @@ to upper test
 '''
 def to_upper_str(s, s2):
     return [x.upper() for x in s]
-run_test('to_upper_str', 's1', 's2', "to upper str")
+# run_test('to_upper_str', 's1', 's2', "to upper str")
 
 def to_upper_np(npchar_1, s2):
     return np.char.upper(npchar_1)
 
-run_test('to_upper_np', 'npchar_1', 's2', "to upper np char array")
+# run_test('to_upper_np', 'npchar_1', 's2', "to upper np char array")
 
 '''
 plain old str
 '''
 def plain_str_eq(s1, s2):
     return [-1 if s1[i] != s2[i] else 0 for i in range(len(s1))]
-run_test('plain_str_eq', 's1', 's2', "PLAIN STR")
+# run_test('plain_str_eq', 's1', 's2', "PLAIN STR")
 
 '''
-np char array using vectorized operations?
+np char array
 '''
 def np_char_eq(s1, s2):
     return np.char.equal(s1, s2)
 
-run_test('np_char_eq', 'npchar_1', 'npchar_2', "NUMPY CHAR ARRAY WITH NP EQUALS")
+# run_test('np_char_eq', 'npchar_1', 'npchar_2', "NUMPY CHAR ARRAY WITH NP EQUALS")
 
 '''
 equivalence of chars
@@ -94,12 +93,12 @@ def str_eq(s1, s2):
             res[i] = -1
     return res
 
-run_test('str_eq', 's1', 's2', "STR")
-run_test('str_eq', 'ascii1', 'ascii2', "STR")
-run_test('str_eq', 'npascii1', 'npascii2', "NUMPY BYTES")
-run_test('str_eq', 'utf32_1', 'utf32_2', "UTF 32")
-run_test('str_eq', 'nputf32_1', 'nputf32_2', "NUMPY UTF 32")
-run_test('str_eq', 'npchar_1', 'npchar_2', "NUMPY CHAR ARRAY")
+# run_test('str_eq', 's1', 's2', "STR")
+# run_test('str_eq', 'ascii1', 'ascii2', "STR")
+# run_test('str_eq', 'npascii1', 'npascii2', "NUMPY BYTES")
+# run_test('str_eq', 'utf32_1', 'utf32_2', "UTF 32")
+# run_test('str_eq', 'nputf32_1', 'nputf32_2', "NUMPY UTF 32")
+# run_test('str_eq', 'npchar_1', 'npchar_2', "NUMPY CHAR ARRAY")
 
 
 '''
@@ -116,11 +115,16 @@ def str_eq_simd(s1, s2):
             res[i] = -1
     return res
 
-run_test('str_eq_simd', 's1', 's2', "SIMD STR")
-run_test('str_eq_simd', 'ascii1', 'ascii2', "SIMD ASCII")
-run_test('str_eq_simd', 'npascii1', 'npascii2', "SIMD NUMPY BYTES")
-run_test('str_eq_simd', 'utf32_1', 'utf32_2', "SIMD UTF 32")
-run_test('str_eq_simd', 'nputf32_1', 'nputf32_2', "SIMD NUMPY UTF 32")
+run_test(str_eq_simd, 's1', 's2', "SIMD STR", True)
+
+#print(str_eq_simd.)
+
+# run_test('str_eq_simd', 'ascii1', 'ascii2', "SIMD ASCII")
+# run_test('str_eq_simd', 'npascii1', 'npascii2', "SIMD NUMPY BYTES")
+# run_test('str_eq_simd', 'utf32_1', 'utf32_2', "SIMD UTF 32")
+# run_test('str_eq_simd', 'nputf32_1', 'nputf32_2', "SIMD NUMPY UTF 32")
+#
+#
 #run_test('str_eq_simd', 'npchar_1', 'npchar_2', "SIMD NUMPY CHAR ARRAY")
 
 

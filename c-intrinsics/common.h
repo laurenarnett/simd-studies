@@ -8,9 +8,6 @@
 
 long long int sum_filter(unsigned int vals[NUM_ELEMENTS]);
 long long int sum_mod(unsigned int vals[NUM_ELEMENTS]);
-long long int sum(unsigned int vals[NUM_ELEMENTS]);
-
-long long int sum_unrolled(unsigned int vals[NUM_ELEMENTS]);
 
 long long int sum_simd_filter(unsigned int vals[NUM_ELEMENTS]);
 long long int sum_simd_mod(unsigned int vals[NUM_ELEMENTS]);

@@ -19,4 +19,4 @@ Each program runs over a length 65546 integer array. Times are averaged over 100
 ![array_sum](./misc/array_sum.svg)
 
 #### Array Sum with Filter
-![array_sum_filter](./misc/array_sum_filter.svg)
+![array_sum_filter1](./misc/array_sum_filter_1.svg)

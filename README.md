@@ -1,8 +1,12 @@
 # Benchmarking SIMD
 
-Comparison of how fast [Numba](https://numba.pydata.org/)'s autovectorization can achieve with respect to Intel C [vector intrinsics](https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE,SSE2,SSE3,SSSE3).
+Comparison of how fast [Numba](https://numba.pydata.org/)'s autovectorization can achieve with respect to Intel C [vector intrinsics](https://software.intel.com/sites/landingpage/IntrinsicsGuide/#techs=SSE,SSE2,SSE3,SSSE3). Read my blog post for more details on my experience working with Numba! https://laurenar.net/posts/python-simd/
 
-Read my blog post for more details on my experience working with Numba! https://laurenar.net/posts/python-simd/
+#### Array Sum
+![array_sum](./misc/array_sum.svg)
+
+#### Array Sum with Filter
+![array_sum_filter1](./misc/array_sum_filter_1.svg)
 
 ## Evaluation
 
@@ -13,10 +17,3 @@ Benchmarked 2 different programs to examine how logical complexity impacts perfo
 
 Each program runs over a length 65546 integer array. Times are averaged over 1000s of iterations.
 
-## Results
-
-#### Array Sum
-![array_sum](./misc/array_sum.svg)
-
-#### Array Sum with Filter
-![array_sum_filter1](./misc/array_sum_filter_1.svg)
